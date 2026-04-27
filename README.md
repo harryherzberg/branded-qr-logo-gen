@@ -33,4 +33,5 @@ Features:
 - html2canvas for PNG export
 - jsPDF for PDF
 
-Live demo: Fork & host on GH Pages or Netlify."
+Repo: https://github.com/harryherzberg/branded-qr-logo-gen  
+Live demo: https://harryherzberg.github.io/branded-qr-logo-gen/ (enable Pages: Settings > Pages > main/(root))"
