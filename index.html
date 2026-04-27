@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Logo Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        #qr-container { text-align: center; border: 2px dashed #ccc; padding: 20px; margin: 20px 0; min-height: 300px; }
+        input, button { margin: 10px; padding: 10px; }
+        #download { background: #28a745; color: white; border: none; cursor: pointer; }
+        .pro { background: #ffc107; color: #000; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>QR Logo Generator</h1>
+    <p>Generate branded QR codes instantly.</p>
+
+    <div>
+        <label>QR Data (URL/Text):</label><br>
+        <input type="text" id="qr-data" value="https://example.com" size="50">
+    </div>
+
+    <div>
+        <label>Logo:</label><br>
+        <input type="file" id="logo-upload" accept="image/*">
+        <img id="logo-preview" style="max-width:100px; max-height:100px; display:none;">
+    </div>
+
+    <div>
+        <button onclick="generateQR()">Generate QR</button>
+    </div>
+
+    <div id="qr-container">
+        <canvas id="qr-canvas"></canvas>
+        <div id="logo-overlay" style="position:absolute; display:none;"></div>
+    </div>
+
+    <div>
+        <button id="download" onclick="downloadPNG()" style="display:none;">Download PNG</button>
+        <button class="pro" onclick="alert('Pro feature: Buy for $29 on Gumroad')">Download SVG/PDF (Pro)</button>
+    </div>
+
+    <script>
+        let qrCanvas, logoImg;
+
+        function generateQR() {
+            const data = document.getElementById('qr-data').value;
+            const canvas = document.getElementById('qr-canvas');
+            canvas.width = 300; canvas.height = 300;
+            QRCode.toCanvas(canvas, data, { width: 300 }, (err) => {
+                if (err) console.error(err);
+                document.getElementById('download').style.display = 'inline';
+            });
+
+            // Logo overlay (basic, free tier limited)
+            const file = document.getElementById('logo-upload').files[0];
+            if (file) {
+                logoImg = new Image();
+                logoImg.onload = () => {
+                    const ctx = canvas.getContext('2d');
+                    const size = 60;
+                    const x = (300 - size)/2;
+                    ctx.drawImage(logoImg, x, x, size, size);
+                };
+                logoImg.src = URL.createObjectURL(file);
+            }
+        }
+
+        function downloadPNG() {
+            const canvas = document.getElementById('qr-canvas');
+            html2canvas(canvas).then(c => {
+                const link = document.createElement('a');
+                link.download = 'qr-logo.png';
+                link.href = c.toDataURL();
+                link.click();
+            });
+        }
+    </script>
+
+    <div style="margin-top: 50px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+        <h3>Go Pro</h3>
+        <p>Unlock colors, custom modules, high-res, SVG/PDF for <strong>$29 one-time</strong>.</p>
+        <button class="pro" onclick="window.open('https://gumroad.com/l/qrlogo', '_blank')">Buy Now (Stub)</button>
+        <p>Free tier: Basic QR + logo overlay.</p>
+    </div>
+</body>
+</html>
